@@ -3,11 +3,24 @@ padding: 0;
 margin: 0;
 box-sizing: border-box;
 }
+@font-face {
+  font-family: 'font1';
+  src: url(./assets/sh.woff2);
+}
+@font-face {
+  font-family: 'font2';
+  src: url(./assets/font2.woff2);
+}
+@font-face {
+  font-family: 'font3';
+  src: url(./assets/circular.woff2);
+}
 html,
 body {
 height: 100%;
 width: 100%;
+background-color:#EBEBEB;
 }
-body{
-background-color: #222;
+.nav{
+  font-family: 'font1';
 }
