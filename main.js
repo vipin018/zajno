@@ -6,25 +6,42 @@ const scroll = new LocomotiveScroll();
 // Create the scene
 const scene = new THREE.Scene();
 
+// Calculate the field of view based on the window height and camera distance and convert to degrees 
+const distance = 20;
+const fov = 2 * Math.atan((window.innerHeight / 2) / distance) * 180 / Math.PI;
 // Create a camera, which determines what we'll see when we render the scene
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-camera.position.z = 5;
+const camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
+camera.position.z = distance;
 
 // Create a renderer and attach it to our document
-const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas'),
+const renderer = new THREE.WebGLRenderer({
+  canvas: document.getElementById('canvas'),
   alpha: true
- });
+});
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 // Add orbit controls to allow for camera movement
 // const controls = new OrbitControls(camera, renderer.domElement);
 
-// Create a basic cube and add it to the scene
-const geometry = new THREE.PlaneGeometry(10, 10);
-const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const plane = new THREE.Mesh(geometry, material);
-scene.add(plane);
+const images = document.querySelectorAll('img');
+const planes = [];
+
+images.forEach(image => {
+  const imgBounds = image.getBoundingClientRect();
+  const texture = new THREE.TextureLoader().load(image.src);
+  const material = new THREE.ShaderMaterial({
+    vertexShader,
+    fragmentShader,
+  });
+  const plane = new THREE.Mesh(new THREE.PlaneGeometry(imgBounds.width, imgBounds.height), material);
+  // plane.position.set(imgBounds.left - window.innerWidth / 2 + imgBounds.width / 2, -imgBounds.top + window.innerHeight / 2 - imgBounds.height / 2, 0);
+  plane.position.set(imgBounds.left - window.innerWidth / 2 + imgBounds.width / 2, -imgBounds.top + window.innerHeight / 2 - imgBounds.height / 2, 0);
+  planes.push(plane);
+  scene.add(plane);
+});
+
+
 
 // Create an animation loop to render the scene
 function animate() {
