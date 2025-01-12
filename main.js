@@ -1,6 +1,8 @@
+import LocomotiveScroll from 'locomotive-scroll';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+const scroll = new LocomotiveScroll();
 // Create the scene
 const scene = new THREE.Scene();
 
@@ -9,26 +11,26 @@ const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerH
 camera.position.z = 5;
 
 // Create a renderer and attach it to our document
-const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas'),
+  alpha: true
+ });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.setSize(window.innerWidth, window.innerHeight);
 
 // Add orbit controls to allow for camera movement
-const controls = new OrbitControls(camera, renderer.domElement);
+// const controls = new OrbitControls(camera, renderer.domElement);
 
 // Create a basic cube and add it to the scene
-const geometry = new THREE.BoxGeometry();
+const geometry = new THREE.PlaneGeometry(10, 10);
 const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-const cube = new THREE.Mesh(geometry, material);
-scene.add(cube);
+const plane = new THREE.Mesh(geometry, material);
+scene.add(plane);
 
 // Create an animation loop to render the scene
 function animate() {
   requestAnimationFrame(animate);
-
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
   // Required if controls.enableDamping or controls.autoRotate are set to true
-  controls.update();
+  // controls.update();
 
   renderer.render(scene, camera);
 }

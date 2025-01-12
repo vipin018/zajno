@@ -12,6 +12,7 @@
     "vite": "^6.0.5"
   },
   "dependencies": {
+    "locomotive-scroll": "^4.1.4",
     "three": "^0.172.0"
   }
 }
