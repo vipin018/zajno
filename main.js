@@ -1,7 +1,8 @@
 import LocomotiveScroll from 'locomotive-scroll';
 import * as THREE from 'three';
 // import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-
+import vertexShader from './shaders/vertexShader.glsl';
+import fragmentShader from './shaders/fragmentShader.glsl';
 const scroll = new LocomotiveScroll();
 // Create the scene
 const scene = new THREE.Scene();
@@ -23,7 +24,6 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 
 // Add orbit controls to allow for camera movement
 // const controls = new OrbitControls(camera, renderer.domElement);
-
 const images = document.querySelectorAll('img');
 const planes = [];
 
@@ -33,13 +33,25 @@ images.forEach(image => {
   const material = new THREE.ShaderMaterial({
     vertexShader,
     fragmentShader,
+    uniforms: {
+      uTexture: { value: texture }
+    }
   });
-  const plane = new THREE.Mesh(new THREE.PlaneGeometry(imgBounds.width, imgBounds.height), material);
-  // plane.position.set(imgBounds.left - window.innerWidth / 2 + imgBounds.width / 2, -imgBounds.top + window.innerHeight / 2 - imgBounds.height / 2, 0);
+
+  const geometry = new THREE.PlaneGeometry(imgBounds.width, imgBounds.height);
+  const plane = new THREE.Mesh(geometry, material);
   plane.position.set(imgBounds.left - window.innerWidth / 2 + imgBounds.width / 2, -imgBounds.top + window.innerHeight / 2 - imgBounds.height / 2, 0);
   planes.push(plane);
   scene.add(plane);
 });
+
+function updatePlanePosition(){
+  planes.forEach((plane,index)=>{
+    const image = images[index];
+    const imgBounds = image.getBoundingClientRect();
+    plane.position.set(imgBounds.left - window.innerWidth / 2 + imgBounds.width / 2, -imgBounds.top + window.innerHeight / 2 - imgBounds.height / 2, 0);
+  })
+}
 
 
 
@@ -48,7 +60,8 @@ function animate() {
   requestAnimationFrame(animate);
   // Required if controls.enableDamping or controls.autoRotate are set to true
   // controls.update();
-
+  updatePlanePosition();
+  
   renderer.render(scene, camera);
 }
 
@@ -60,4 +73,5 @@ window.addEventListener('resize', () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
+  updatePlanePosition();
 });
