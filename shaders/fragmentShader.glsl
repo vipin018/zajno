@@ -3,9 +3,21 @@ varying vec2 vUv;
 uniform sampler2D uTexture;
 
 void main() {
+
+float blocks = 30.0;
+vec2 blockUV = floor(vUv*blocks)/blocks;
+vec2 mouse = vec2(0.5,0.5);
+float distance = length(blockUV-mouse);
+// smoothstep is a function that returns a value between 0 and 1 based on the distance between the mouse and the blockUV
+float alpha = smoothstep(0.5,0.,distance);
+// if the distance is less than 0.5, then the alpha is 1, otherwise it is 0
+
+vec2 distortion = vec2(0.03)*alpha;
+
     // Sample the texture at the interpolated UV coordinates
-    vec4 color = texture2D(uTexture, vUv);
+    vec4 color = texture2D(uTexture, vUv+distortion);
     
     // Set the fragment color
-    gl_FragColor = vec4(vUv, 0.0, 1.0);
+    // gl_FragColor = vec4(vUv*distortion, 0.0, 1.0);
+    gl_FragColor = color;
 }
