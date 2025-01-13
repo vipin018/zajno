@@ -1,6 +1,5 @@
 import LocomotiveScroll from 'locomotive-scroll';
 import * as THREE from 'three';
-// import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import vertexShader from './shaders/vertexShader.glsl';
 import fragmentShader from './shaders/fragmentShader.glsl';
 const scroll = new LocomotiveScroll();
@@ -26,6 +25,8 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 // const controls = new OrbitControls(camera, renderer.domElement);
 const images = document.querySelectorAll('img');
 const planes = [];
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
 
 images.forEach(image => {
   const imgBounds = image.getBoundingClientRect();
@@ -76,8 +77,15 @@ window.addEventListener('resize', () => {
 });
 
 window.addEventListener('mousemove', (event) => {
-  const mouse = new THREE.Vector2(event.clientX / window.innerWidth, event.clientY / window.innerHeight);
-  planes.forEach((plane,index)=>{
-    plane.material.uniforms.uMouse.value = mouse;
-  })
-})
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouse.x = ((event.clientX - rect.left) / window.innerWidth) * 2 - 1;
+  mouse.y = -((event.clientY - rect.top) / window.innerHeight) * 2 + 1;
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(planes);
+
+  if (intersects.length > 0) {
+    const intersectedPlane = intersects[0];
+    const uv = intersectedPlane.uv;
+    intersectedPlane.object.material.uniforms.uMouse.value.set(uv.x, uv.y);
+  }
+});
