@@ -2,13 +2,15 @@ import LocomotiveScroll from 'locomotive-scroll';
 import * as THREE from 'three';
 import vertexShader from './shaders/vertexShader.glsl';
 import fragmentShader from './shaders/fragmentShader.glsl';
+import gsap from 'gsap';
+
 const scroll = new LocomotiveScroll();
 // Create the scene
 const scene = new THREE.Scene();
 
 // Calculate the field of view based on the window height and camera distance and convert to degrees 
-const distance = 20;
-const fov = 2 * Math.atan((window.innerHeight / 2) / distance) * 180 / Math.PI;
+let distance = 20;
+let fov = 2 * Math.atan((window.innerHeight / 2) / distance) * 180 / Math.PI;
 // Create a camera, which determines what we'll see when we render the scene
 const camera = new THREE.PerspectiveCamera(fov, window.innerWidth / window.innerHeight, 0.1, 1000);
 camera.position.z = distance;
@@ -36,7 +38,8 @@ images.forEach(image => {
     fragmentShader,
     uniforms: {
       uTexture: { value: texture },
-      uMouse: { value: new THREE.Vector2(0.5, 0.5) }
+      uMouse: { value: new THREE.Vector2(0.5, 0.5) },
+      uHover: { value: 0 }
     }
   });
 
@@ -70,6 +73,8 @@ animate();
 
 // Handle window resize
 window.addEventListener('resize', () => {
+  distance = 20;
+  fov = 2 * Math.atan((window.innerHeight / 2) / distance) * 180 / Math.PI;
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -83,9 +88,16 @@ window.addEventListener('mousemove', (event) => {
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(planes);
 
+  planes.forEach((plane)=>{
+    plane.material.uniforms.uHover.value = 0;
+  });
+
+
   if (intersects.length > 0) {
     const intersectedPlane = intersects[0];
     const uv = intersectedPlane.uv;
     intersectedPlane.object.material.uniforms.uMouse.value.set(uv.x, uv.y);
+    intersectedPlane.object.material.uniforms.uHover.value = 1;
   }
+  
 });
