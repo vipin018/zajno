@@ -34,7 +34,8 @@ images.forEach(image => {
     vertexShader,
     fragmentShader,
     uniforms: {
-      uTexture: { value: texture }
+      uTexture: { value: texture },
+      uMouse: { value: new THREE.Vector2(0.5, 0.5) }
     }
   });
 
@@ -73,3 +74,10 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   updatePlanePosition();
 });
+
+window.addEventListener('mousemove', (event) => {
+  const mouse = new THREE.Vector2(event.clientX / window.innerWidth, event.clientY / window.innerHeight);
+  planes.forEach((plane,index)=>{
+    plane.material.uniforms.uMouse.value = mouse;
+  })
+})
