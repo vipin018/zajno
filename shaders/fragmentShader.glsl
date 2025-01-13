@@ -5,7 +5,7 @@ uniform float uHover;
 
 void main() {
 
-    float blocks = 15.0;
+    float blocks = 20.0;
     vec2 blockUV = floor(vUv * blocks) / blocks;
 // vec2 mouse = vec2(0.5,0.5);
     float distance = length(blockUV - uMouse);
