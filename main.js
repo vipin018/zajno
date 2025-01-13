@@ -53,8 +53,6 @@ function updatePlanePosition(){
   })
 }
 
-
-
 // Create an animation loop to render the scene
 function animate() {
   requestAnimationFrame(animate);
